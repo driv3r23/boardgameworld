@@ -1,24 +1,23 @@
+const path = require('path');
 const webpack = require('webpack');
-const { resolve } = require('path');
 
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
-module.exports = {
-    entry: [
-        'react-hot-loader/patch',
-        'webpack-dev-server/client?http://localhost:8080',
-        'webpack/hot/only-dev-server',
-        'babel-polyfill',
-        './src/index'
-    ],
+const client = {
+    name: 'client',
+    entry: {
+        client: [
+            'react-hot-loader/patch',
+            'webpack-hot-middleware/client?name=client',
+            './src/index'
+        ]
+    },
     output: {
-        path: resolve(__dirname, 'dist'),
+        path: path.join(__dirname, 'dist'),
         filename: '[name].js',
         publicPath: '/'
     },
-    resolveLoader: {
-        moduleExtensions: ['-loader']
-    },
+    target: 'web',
     module: {
         rules: [
             {
@@ -27,7 +26,7 @@ module.exports = {
                 loader: 'babel',
                 options: {
                     presets: [
-                        ['es2015', { 'modules': false }],
+                        ['env', { 'modules' : false }],
                         'stage-0',
                         'react'
                     ],
@@ -55,16 +54,6 @@ module.exports = {
             }
         ]
     },
-    watch: true,
-    watchOptions: {
-        aggregateTimeout: 300
-    },
-    devtool: 'cheap-module-eval-source-map',
-    devServer: {
-        hot: true,
-        contentBase: resolve(__dirname, 'dist'),
-        publicPath: '/'
-    },
     plugins: [
         new ExtractTextPlugin({
             filename: '[name].css',
@@ -72,9 +61,55 @@ module.exports = {
             allChunks: true
         }),
         new webpack.HotModuleReplacementPlugin(),
-        new webpack.NamedModulesPlugin(),
-        new webpack.DefinePlugin({
-            NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development')
-        })
+        new webpack.NamedModulesPlugin()
     ]
-};
+},
+server = {
+    name: 'server',
+    entry: {
+        server: [
+            'webpack-hot-middleware/client?name=server',
+            './src/server/server/index.js'
+        ],
+    },
+    output: {
+        path: path.join(__dirname, 'dist'),
+        filename: '[name].js',
+        libraryTarget: 'commonjs2',
+        publicPath: '/'
+    },
+    resolve: {
+        extensions: ['.js', '.jsx']
+    },
+    target: 'node',
+    module: {
+        rules: [
+            {
+                test: /\.js$/,
+                exclude: /(node_modules)/,
+                loader: 'babel',
+                options: {
+                    presets: [
+                        'env',
+                        'stage-0',
+                        'react'
+                    ]
+                }
+            }
+        ]
+    },
+    plugins: [
+        new webpack.HotModuleReplacementPlugin(),
+    ]
+},
+defaults = {
+    resolveLoader: {
+        moduleExtensions: ['-loader']
+    },
+    devtool: 'source-map'
+}
+
+module.exports = [
+    {...client, ...defaults},
+    {...server, ...defaults}
+];

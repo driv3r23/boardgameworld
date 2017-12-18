@@ -1,16 +1,16 @@
-import 'babel-polyfill'
-
 import React from 'react'
 import ReactDOM from 'react-dom'
-
+import { BrowserRouter } from 'react-router-dom'
 import { AppContainer } from 'react-hot-loader'
 
-import App from './containers/App'
+import App from './containers/App/App'
 
-const render = (Component) => {
-    ReactDOM.render(
+const render = (App) => {
+    ReactDOM.hydrate(
         <AppContainer>
-            <Component/>
+            <BrowserRouter>
+                <App/>
+            </BrowserRouter>
         </AppContainer>,
         document.getElementById('root')
     );
@@ -18,4 +18,8 @@ const render = (Component) => {
 
 render(App);
 
-if (module.hot) module.hot.accept('./containers/App', () => { render(App) });
+if (module.hot) {
+    module.hot.accept('./containers/App/App', () => { 
+        render(App) 
+    })
+}
