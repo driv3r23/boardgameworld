@@ -12,17 +12,12 @@ app.use(express.static('dist'))
 
 app.get('*', function (req, res, next) {
     const context = {}
+    const render = server(req, context);
 
-    if (context.url) {
-        res.writeHead(301, {
-            Location: context.url
-        })
-        res.end()
-    } else {
-        res.status(200).send(
-            server(req, context)
-        )
-    }
+    if (context.status === 404) res.status(404)
+    else res.status(200)
+
+    res.send(render)
 })
 
 app.use(function (req, res, next) {
