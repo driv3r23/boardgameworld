@@ -1,5 +1,8 @@
 export default ( content, state ) =>
-    `<!DOCTYPE html> 
+    `<!DOCTYPE html>
+        <head>
+            <link rel="stylesheet" href="styles.css"/>
+        </head>
         <body>
             <main id="root">${ content }</main>
             <script>

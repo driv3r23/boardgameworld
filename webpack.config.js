@@ -36,30 +36,23 @@ const client = {
                 }
             },
             {
-                test: /\.styl$/,
-                use: ExtractTextPlugin.extract({
-                    fallback: 'style',
-                    use: [
-                        'css',
-                        {
-                            loader: 'autoprefixer',
-                            options: {
-                                browsers: 'last 2 versions'
-                            }
-                        },
-                        'stylus'
-                    ],
-                    publicPath: "/"
-                })
+                test: /\.css$/,
+                use: [
+                    'style',
+                    {
+                        loader: 'css',
+                        options: {
+                            modules: true,
+                            importLoaders: 1,
+                            localIdentName: '[hash:base64:5]'
+                        }
+                    },
+                    'postcss'
+                ]
             }
         ]
     },
     plugins: [
-        new ExtractTextPlugin({
-            filename: '[name].css',
-            disable: false,
-            allChunks: true
-        }),
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NamedModulesPlugin()
     ]
@@ -68,7 +61,6 @@ server = {
     name: 'server',
     entry: {
         server: [
-            'webpack-hot-middleware/client?name=server',
             './src/server/server/index.js'
         ],
     },
@@ -95,11 +87,33 @@ server = {
                         'react'
                     ]
                 }
+            },
+            {
+                test: /\.css$/,
+                use: ExtractTextPlugin.extract({
+                    fallback: "isomorphic-style",
+                    use: [
+                        {
+                            loader: 'css',
+                            options: {
+                                modules: true,
+                                importLoaders: 1,
+                                localIdentName: '[hash:base64:5]'
+                            }
+                        },
+                        'postcss'
+                    ],
+                    publicPath: "/"
+                })
             }
         ]
     },
     plugins: [
-        new webpack.HotModuleReplacementPlugin(),
+        new ExtractTextPlugin({
+            filename: 'styles.css',
+            disable: false,
+            allChunks: true
+        })
     ]
 },
 defaults = {

@@ -1,0 +1,15 @@
+.header {
+    padding: 10px;
+}
+
+.title {
+    font-size: 16px;
+    line-height: 18px;
+}
+
+.nav {
+    margin: 10px 0;
+    padding: 0;
+
+    list-style: none;
+}
